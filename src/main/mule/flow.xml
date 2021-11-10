@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="73271042-682d-4d03-9443-25403d7343d9" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="flowFlow" doc:id="f9e88669-a93d-431f-abbe-258a135e5f1a" >
+		<http:listener doc:name="Listener" doc:id="e82b22c2-3060-435d-8049-cd4c7b5dd8da" config-ref="HTTP_Listener_config" path="/flow"/>
+		<set-variable value="#[payload.city]" doc:name="city" doc:id="62cae691-0b01-4161-bc9c-d1065e448749" variableName="city"/>
+		<choice doc:name="Choice" doc:id="c22e83e9-86a1-4258-8caf-769967109e73" >
+			<when expression='#[vars.city == "nellorre"]'>
+				<ee:transform doc:name="Transform Message" doc:id="34dd5760-3766-42c3-9f72-a6bc9d40c96d" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+
+	"success"
+]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<when expression='#[vars.city == "nellore"]'>
+				<logger level="INFO" doc:name="Logger" doc:id="2e5d2cd8-cd14-40bd-a9d6-00370eb74da4" />
+			</when>
+			<otherwise >
+				<ee:transform doc:name="Transform Message" doc:id="cf89c08b-88c3-4640-9e5f-93df8be78039" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+
+"failure"]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
+	</flow>
+</mule>
